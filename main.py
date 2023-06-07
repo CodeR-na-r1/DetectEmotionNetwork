@@ -12,7 +12,7 @@ PATH_TO = "readyDataSet"
 NAME_SVG_FILE = "bboxDescriptions.svg"
 
 ID = "facePeople"
-SIZE_PROCESSING = (900, 900)    # (y, x)
+SIZE_PROCESSING = (600, 600)    # (y, x)
 SIZE_TO = (224, 224)    # (y, x)
 
 # code functions
@@ -42,11 +42,16 @@ def mouse_callback(event, x, y, flags, param):
         endY = startY + SIZE_PROCESSING[0]
 
         if endX > img.shape[1]:
-            endX = img.shape[1]
+            endX = img.shape[1] - 1
             startX = endX - SIZE_PROCESSING[1]
         if endY > img.shape[0]:
-            endY = img.shape[0]
+            endY = img.shape[0] - 1
             startY = endY - SIZE_PROCESSING[0]
+
+        if startX < 0:
+            startX = 0
+        if startY < 0:
+            startY = 0
             
         # img = img_copy[startY : endY, startX : endX]
         img = img_copy.copy()
@@ -74,15 +79,15 @@ for img_file in pathlib.Path(PATH_FROM).glob("*"):
     img = cv2.imread(str(img_file))
     print(img.shape)
 
-    if img.shape[0] > 1080 and img.shape[1] > 1920: #? надо как то заранее отресайзить слишком большие картинки
-        newY = img.shape[0]//(img.shape[0]//1080)
-        newX = img.shape[1]//(img.shape[1]//1920)
-        if newX == img.shape[1]:
-            newX = img.shape[1] - 1920
+    if img.shape[0] > 1080: #? надо как то заранее отресайзить слишком большие картинки
+        k = img.shape[1] / img.shape[0]
+        newY = 900
+        newX = int(newY * k)
 
-        print(f"{newY}, {newX}")
+        print(f"Before: {img.shape}")
+        print(f"Calced coord: {newY}, {newX}")
         img = cv2.resize(img, (newX, newY))
-        print(img.shape)
+        print(f"After: {img.shape}")
 
     img_copy = img.copy()
 
@@ -134,7 +139,7 @@ for img_file in pathlib.Path(PATH_FROM).glob("*"):
         elif key == ord('s'):
 
             if isROIReady:
-                img = cv2.resize(img, SIZE_TO)
+                resImg = cv2.resize(resImg, SIZE_TO)
 
                 if (img.shape[0] != SIZE_TO[0] and img.shape[1] != SIZE_TO[1]):
                     raise "Size error"
