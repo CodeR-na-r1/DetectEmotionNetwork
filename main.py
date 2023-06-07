@@ -141,7 +141,7 @@ for img_file in pathlib.Path(PATH_FROM).glob("*"):
             if isROIReady:
                 resImg = cv2.resize(resImg, SIZE_TO)
 
-                if (img.shape[0] != SIZE_TO[0] and img.shape[1] != SIZE_TO[1]):
+                if (resImg.shape[0] != SIZE_TO[0] and resImg.shape[1] != SIZE_TO[1]):
                     raise "Size error"
 
                 bbFixed = [0, 0, 0, 0]
