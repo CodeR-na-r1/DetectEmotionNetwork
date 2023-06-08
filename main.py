@@ -58,21 +58,36 @@ def mouse_callback(event, x, y, flags, param):
         resImg = img_copy.copy()[startY : endY, startX : endX]
         img = cv2.rectangle(img=img, pt1=(startX, startY), pt2=(endX, endY), color=(0, 0, 255), thickness=4)
 
-    elif event == cv2.EVENT_MOUSEHWHEEL:
+    elif event == 10 and flags > 0:
         SIZE_PROCESSING = (SIZE_PROCESSING[0] + 50, SIZE_PROCESSING[1] + 50)
+        if SIZE_PROCESSING[1] > img.shape[1]:
+            SIZE_PROCESSING = (SIZE_PROCESSING[0], img.shape[1])
+        if SIZE_PROCESSING[0] > img.shape[0]:
+            SIZE_PROCESSING = (img.shape[0], SIZE_PROCESSING[1])
 
-    elif event == cv2.EVENT_MOUSEWHEEL:
+    elif event == 10 and flags < 0:
         SIZE_PROCESSING = (SIZE_PROCESSING[0] - 50, SIZE_PROCESSING[1] - 50)
+        if SIZE_PROCESSING[1] < 0:
+            SIZE_PROCESSING = (SIZE_PROCESSING[0], 50)
+        if SIZE_PROCESSING[0] < 0:
+            SIZE_PROCESSING = (50, SIZE_PROCESSING[1])
 
     elif event == cv2.EVENT_RBUTTONDOWN:
         SIZE_PROCESSING = (900, 900)
+        if SIZE_PROCESSING[0] > img.shape[0] or SIZE_PROCESSING[1] > img.shape[1]:
+            value = min(img.shape[0], img.shape[1])
+            SIZE_PROCESSING = (value, value)
+
+    if SIZE_PROCESSING[0] != SIZE_PROCESSING[1]:    # For all types events
+        elem = min(SIZE_PROCESSING[0], SIZE_PROCESSING[1])
+        SIZE_PROCESSING = (elem, elem)
 
 # -------- main code --------
 
 if not os.path.exists(PATH_TO):
     os.makedirs(PATH_TO)
 
-img_counter = 0
+img_counter = 0 # REMEMBER ABOUT IT
 fileSVG = open(NAME_SVG_FILE, 'a')
 
 for img_file in pathlib.Path(PATH_FROM).glob("*"):
@@ -94,6 +109,10 @@ for img_file in pathlib.Path(PATH_FROM).glob("*"):
     isCut = None
     isROIReady = None
     SIZE_PROCESSING = (900, 900)
+    if SIZE_PROCESSING[0] > img.shape[0] or SIZE_PROCESSING[1] > img.shape[1]:
+        value = min(img.shape[0], img.shape[1])
+        SIZE_PROCESSING = (value, value)
+
     while True:
 
         if isCut == None:
