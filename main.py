@@ -175,6 +175,8 @@ for img_file in pathlib.Path(PATH_FROM).glob("*"):
 
                 img_counter += 1
 
+                print(f"IMG Counter -> {img_counter}")
+
                 break
             else:
                 print(f"isROIReady == false")
